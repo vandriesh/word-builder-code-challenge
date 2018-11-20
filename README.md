@@ -2,26 +2,55 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.0.6.
 
-## Development server
+## Test:
+Run once tests:
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+```bash
+$ ng test --watch=false 
+```
 
-## Code scaffolding
+## Given global dictionary
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+```js
+['qwe', 'aaa', 'PRO', 'PORA']
+```
 
-## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+### UseCase 1
 
-## Running unit tests
+```js
+    // P0 <----> R1 <----> A2
+    // ^         ^
+    // |         |
+    // |         v
+    // +-------> O3
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+ possible combinations:
 
-## Further help
+`PRA, PR, RA, PRO, RO, PORA, PO, POR, OR, ORA, RPO, RP, ROP, OP, ARPO, AR, ARP, AROP, ARO, OPRA, OPR, ORP`
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+existing words:
+
+`PRO,PORA`
+
+---
+
+### UseCase 2 
+ 
+
+```js
+    // P <-----> R
+    //           ^
+    //           |
+    //           v
+    //           O
+```
+
+possible combinations:
+
+`PRO, PR, RO, RP, ORP, OR`
+
+`PRO`
