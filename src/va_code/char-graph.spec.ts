@@ -2,8 +2,36 @@ import { buildNode, getCharGraphInstance } from './char-graph';
 import { getNodes, getNodesForUseCase2 } from './graph-connection-feature.spec';
 import { buildPath, getIntermediatePaths, WordUtil } from './word-util';
 import { Dictionary } from './dictionary';
-import { Node } from './models';
+import { CharNode, Node } from './models';
 import { EntityStorage } from './entity-storage';
+
+function buildPathStorage(nodes, graph) {
+    const pathContainer = new EntityStorage<Node>();
+    const possibleCombinations = [];
+
+    nodes.forEach(node => {
+        const combinations = [];
+        buildPath(node, [], combinations, graph);
+        combinations.forEach(path => possibleCombinations.push(path));
+    });
+
+    possibleCombinations.forEach(path => {
+        const item: Node = { id: path.join('-'), path } as Node;
+        pathContainer.addItem(item);
+
+        const intermediatePaths = getIntermediatePaths(path);
+
+        intermediatePaths.forEach(intermediatePath => {
+            const intermediateIem: Node = {
+                id: intermediatePath.join('-'),
+                path: intermediatePath,
+            } as Node;
+            pathContainer.addItem(intermediateIem);
+        });
+    });
+
+    return pathContainer;
+}
 
 describe('Char Graph', function() {
     let nodes, graph, wordUtil;
@@ -19,7 +47,7 @@ describe('Char Graph', function() {
     });
 
     it('should build CharNode', function() {
-        const out = buildNode({ name: 'a' }, 1);
+        const out: CharNode = buildNode<CharNode>({ name: 'a' }, 1);
 
         expect(out).toEqual({
             name: 'a',
@@ -32,38 +60,10 @@ describe('Char Graph', function() {
         graph.addNodes(nodes);
         wordUtil = new WordUtil(graph);
 
-        const longestPathResults = [];
-        const possibleCombinations = [];
         const possibleWords = [];
+        const pathStorage = buildPathStorage(nodes, graph);
 
-        nodes.forEach(node => {
-            const combinations = [];
-            buildPath(node, [], combinations, graph);
-            longestPathResults.push({
-                node,
-                combinations,
-            });
-            combinations.forEach(path => possibleCombinations.push(path));
-        });
-
-        const pathContainer = new EntityStorage<Node>();
-
-        possibleCombinations.forEach((path, i) => {
-            const item: Node = { id: path.join('-'), path } as Node;
-            pathContainer.addItem(item);
-
-            const intermediatePaths = getIntermediatePaths(path);
-
-            intermediatePaths.forEach(intermediatePath => {
-                const intermediateIem: Node = {
-                    id: intermediatePath.join('-'),
-                    path: intermediatePath,
-                } as Node;
-                pathContainer.addItem(intermediateIem);
-            });
-        });
-
-        pathContainer.getItems().forEach(({ path }: any) => {
+        pathStorage.getItems().forEach(({ path }: any) => {
             const word = wordUtil.buildWord(path);
             possibleWords.push(word);
         });
@@ -74,7 +74,7 @@ describe('Char Graph', function() {
 
         expect(existingWords).toEqual(['PRO', 'PORA']);
 
-        console.log('UC1: all words words', possibleWords);
+        console.log('UC1: all possible words based on graph', possibleWords);
         console.log('UC1: global dictionary', globalDictionary.getWords());
         console.log('UC1: existing words', existingWords);
     });
@@ -84,39 +84,11 @@ describe('Char Graph', function() {
         graph.addNodes(nodes2);
         wordUtil = new WordUtil(graph);
 
-        const longestPathResults = [];
-        const possibleCombinations = [];
         const possibleWords = [];
-
-        nodes2.forEach(node => {
-            const combinations = [];
-            buildPath(node, [], combinations, graph);
-            longestPathResults.push({
-                node,
-                combinations,
-            });
-            combinations.forEach(path => possibleCombinations.push(path));
-        });
-
-        const pathContainer = new EntityStorage<Node>();
-
-        possibleCombinations.forEach((path, i) => {
-            const item: Node = { id: path.join('-'), path } as Node;
-            pathContainer.addItem(item);
-
-            const intermediatePaths = getIntermediatePaths(path);
-
-            intermediatePaths.forEach(intermediatePath => {
-                const intermediateIem: Node = {
-                    id: intermediatePath.join('-'),
-                    path: intermediatePath,
-                } as Node;
-                pathContainer.addItem(intermediateIem);
-            });
-        });
+        const pathStorage = buildPathStorage(nodes2, graph);
 
         const allPaths = [];
-        pathContainer.getItems().forEach(({ path }: any) => {
+        pathStorage.getItems().forEach(({ path }: any) => {
             allPaths.push(path);
             const word = wordUtil.buildWord(path);
             possibleWords.push(word);
@@ -137,7 +109,7 @@ describe('Char Graph', function() {
 
         expect(existingWords).toEqual(['PRO']);
 
-        console.log('UC2: all words words', possibleWords);
+        console.log('UC2: all possible words based on graph', possibleWords);
         console.log('UC2: global dictionary', globalDictionary.getWords());
         console.log('UC2: existing words', existingWords);
     });

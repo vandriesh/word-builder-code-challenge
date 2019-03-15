@@ -2,7 +2,7 @@ import { CharNode, GraphNode } from './models';
 import { GraphConnectionFeature } from './graph-connection-feature';
 import { EntityStorage } from './entity-storage';
 
-export function buildNode<T extends GraphNode>(node, id: number) {
+export function buildNode<T extends GraphNode>(node, id: number): T {
     return {
         ...node,
         id,
@@ -18,7 +18,7 @@ export class Graph<T extends GraphNode> {
     private ids = 0;
 
     addChar(name: string): T {
-        const node: T = buildNode({ name }, this.ids++);
+        const node: T = buildNode<T>({ name }, this.ids++);
 
         this.container.addItem(node);
 
