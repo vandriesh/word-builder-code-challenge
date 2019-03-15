@@ -1,4 +1,4 @@
-# WordChecker
+# Code Challenge #4 - WordChecker
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.0.6.
 
@@ -19,11 +19,11 @@ $ ng test --watch=false
 ### UseCase 1
 
 ```js
-    // P0 <----> R1 <----> A2
-    // ^         ^
-    // |         |
-    // |         v
-    // +-------> O3
+    // P <----> R <----> A
+    // ^        ^
+    // |        |
+    // |        v
+    // +------> O
 ```
 
 
